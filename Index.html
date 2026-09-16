@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dholpur Bike Taxi - CEO</title>
+<style>body{font-family:sans-serif;padding:15px} a{padding:10px;background:#000;color:#ffcc00;text-decoration:none;border-radius:8px;margin:5px;display:inline-block}</style>
+</head>
+<body>
+<h1>🏍️ Dholpur Bike Taxi - CEO Panel</h1>
+<a href="customer.html">1. Customer Booking Link</a>
+<a href="rider.html">2. Rider App Link</a>
+<p>Ye 2 link ko share kar. Booking yahi dikhegi.</p>
+<div id="list">Koi booking nahi</div>
+<script>
+setInterval(()=>{let b=JSON.parse(localStorage.getItem('db')||'[]');document.getElementById('list').innerHTML=b.map(x=>x.from+'->'+x.to+' '+x.phone).join('<br>')},1000)
+</script>
+</body>
+</html>
