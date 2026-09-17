@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dholpur Bike Taxi - Rider</title>
+<style>
+body{font-family:sans-serif; background:#e8f0fe; margin:0; padding:15px}
+.header{background:#000; color:#00e676; padding:15px; border-radius:15px; text-align:center; font-weight:bold; font-size:19px}
+.card{background:white; padding:15px; border-radius:12px; margin:12px 0; box-shadow:0 3px 8px rgba(0,0,0,0.1)}
+.btn{width:100%; padding:12px; background:#00c853; color:white; border:none; border-radius:8px; font-weight:bold; font-size:15px; margin-top:8px}
+.btn2{background:#ff1744}
+</style>
+</head>
+<body>
+
+<div class="header">🏍️ Dholpur Rider Panel</div>
+<div id="rides">Loading rides...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// SAME FIREBASE CONFIG - Apne Index.html se copy karke yahan paste karna
+const firebaseConfig = {
+  apiKey: "AIzaSy...Tera Wala",
+  authDomain: "tera-project.firebaseapp.com",
+  projectId: "tera-project-id",
+  storageBucket: "tera-project.appspot.com",
+  messagingSenderId: "123...",
+  appId: "1:123..."
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const ridesDiv = document.getElementById('rides');
+
+const q = query(collection(db, "rides"), orderBy("createdAt", "desc"));
+
+onSnapshot(q, (snapshot) => {
+  ridesDiv.innerHTML = "";
+  if(snapshot.empty){
+    ridesDiv.innerHTML = "<p style='text-align:center'>Koi ride nahi hai abhi</p>";
+    return;
+  }
+  snapshot.forEach((docSnap) => {
+    let data = docSnap.data();
+    let id = docSnap.id;
+    let html = `
+      <div class="card">
+        <b>Customer:</b> ${data.customerName}<br>
+        <b>From:</b> ${data.from}<br>
+        <b>To:</b> ${data.to}<br>
+        <b>Status:</b> <span style="color:${data.status=='pending'?'orange':'green'}">${data.status}</span><br>
+        ${data.status=='pending' ? `<button class="btn" onclick="acceptRide('${id}')">Ride Accept Karo</button>` : ''}
+        ${data.status=='accepted' ? `<button class="btn btn2" onclick="completeRide('${id}')">Ride Complete Karo</button>` : ''}
+      </div>
+    `;
+    ridesDiv.innerHTML += html;
+  });
+});
+
+window.acceptRide = async (id) => {
+  await updateDoc(doc(db, "rides", id), { status: "accepted" });
+}
+window.completeRide = async (id) => {
+  await updateDoc(doc(db, "rides", id), { status: "completed" });
+  alert("Ride Completed! Paise CEO panel me add ho gaye.");
+}
+</script>
+</body>
+</html>
