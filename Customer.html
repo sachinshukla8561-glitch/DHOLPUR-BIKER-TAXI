@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dholpur Bike Taxi - Customer</title>
+<style>
+body{font-family: 'Segoe UI', sans-serif; background:#fff7d6; margin:0; padding:15px}
+.header{background:#000; color:#ffc800; padding:15px; border-radius:15px; text-align:center; font-size:20px; font-weight:bold}
+.card{background:white; padding:20px; border-radius:15px; margin-top:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+label{font-weight:bold; font-size:14px}
+input{width:100%; padding:13px; margin:8px 0 15px 0; border-radius:10px; border:1.5px solid #ddd; box-sizing:border-box; font-size:15px}
+.btn{width:100%; padding:14px; background:#000; color:#ffc800; border:none; border-radius:10px; font-size:17px; font-weight:bold}
+#status{text-align:center; margin-top:15px; font-weight:bold; color:green}
+</style>
+</head>
+<body>
+
+<div class="header">🏍️ Dholpur Bike Taxi</div>
+
+<div class="card">
+<h3 style="margin-top:0">Ride Book Karo</h3>
+
+<label>Aapka Naam</label>
+<input id="name" placeholder="Ex: Sachin">
+
+<label>Kahan Se Jana Hai?</label>
+<input id="from" placeholder="Ex: Dholpur Bus Stand">
+
+<label>Kahan Tak Jana Hai?</label>
+<input id="to" placeholder="Ex: Machkund Chauraha">
+
+<button class="btn" onclick="bookRide()">Ride Book Karo - ₹30 se start</button>
+
+<p id="status"></p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// TERA FIREBASE CONFIG - Apne Index.html se copy karke yahan paste kar dena
+const firebaseConfig = {
+  apiKey: "AIzaSy...Tera Wala",
+  authDomain: "tera-project.firebaseapp.com",
+  projectId: "tera-project-id",
+  storageBucket: "tera-project.appspot.com",
+  messagingSenderId: "123...",
+  appId: "1:123..."
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.bookRide = async () => {
+  let name = document.getElementById('name').value;
+  let from = document.getElementById('from').value;
+  let to = document.getElementById('to').value;
+
+  if(name=='' || from=='' || to==''){
+    alert('Bhai sab details bhar de');
+    return;
+  }
+
+  document.getElementById('status').innerText = "⏳ Booking ho rahi hai...";
+  
+  try{
+    await addDoc(collection(db, "rides"), {
+      customerName: name,
+      from: from,
+      to: to,
+      status: "pending",
+      fare: 30,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById('status').innerText = "✅ Ride Book Ho Gayi! Rider jald contact karega.";
+    document.getElementById('name').value='';
+    document.getElementById('from').value='';
+    document.getElementById('to').value='';
+  }catch(e){
+    document.getElementById('status').innerText = "❌ Error: " + e.message;
+  }
+}
+</script>
+</body>
+</html>
